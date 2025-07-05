@@ -143,3 +143,5 @@ Dockerfile.dev
 
 # Turbo
 .turbo/
+
+bun.lock

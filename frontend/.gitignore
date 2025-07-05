@@ -136,3 +136,6 @@ workbox-*.js
 
 # Preview builds
 preview-dist/
+
+bun.lock
+bun.lockb
