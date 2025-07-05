@@ -1,5 +1,4 @@
-# Backend для RA16-Diploma
-# https://github.com/netology-code/ra16-diploma
+# Backend для REACT-Diploma
 
 ```bash
 # установить зависимости

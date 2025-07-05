@@ -138,4 +138,6 @@ workbox-*.js
 preview-dist/
 
 bun.lock
+**/bun.lock
 bun.lockb
+**/bun.lockb
