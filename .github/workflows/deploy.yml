@@ -1,0 +1,62 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'frontend/**' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        working-directory: frontend
+        run: bun install --frozen-lockfile
+
+      - name: Type Check
+        working-directory: frontend
+        run: bun run type-check
+
+      - name: Lint
+        working-directory: frontend
+        run: bun run lint
+
+      - name: Build
+        working-directory: frontend
+        run: bun run build
+        env:
+          NODE_ENV: production
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: frontend/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v3

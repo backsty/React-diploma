@@ -1,0 +1,101 @@
+# Dependencies
+node_modules/
+*/node_modules/
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Build outputs
+dist/
+build/
+out/
+coverage/
+.vite/
+.next/
+.nuxt/
+.svelte-kit/
+storybook-static/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+.envrc
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+bun.lockb
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional caches
+.npm
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Temporary folders
+tmp/
+temp/
+.tmp/
+
+# IDEs and editors
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Testing
+.nyc_output
+*.lcov
+
+# TypeScript
+*.tsbuildinfo
+
+# Deployment
+.vercel/
+.netlify/
+.firebase/
+
+# Local development
+.local/
+.cache/
+.parcel-cache/
+
+# Package manager locks (keep bun.lockb in gitignore)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
