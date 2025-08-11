@@ -11,6 +11,24 @@ export default defineConfig(({ command, mode }) => {
   const isDev = command === 'serve';
   const isProd = command === 'build';
 
+  const API_BASE_URL = isProd 
+    ? (env.VITE_PROD_API_BASE_URL || 'https://react-diploma-backend.onrender.com')
+    : (env.VITE_API_BASE_URL || 'http://localhost:7070');
+
+  const BASE_URL = isProd
+    ? (env.VITE_PROD_BASE_URL || '/React-diploma/')
+    : (env.VITE_BASE_URL || '/');
+
+  // eslint-disable-next-line no-console
+  console.log(`🔧 Vite Config:`, {
+    mode,
+    command,
+    API_BASE_URL,
+    BASE_URL,
+    isDev,
+    isProd
+  });
+
   return {
     plugins: [
       react({
@@ -28,6 +46,7 @@ export default defineConfig(({ command, mode }) => {
     ],
 
     publicDir: 'public',
+    base: BASE_URL,
 
     resolve: {
       alias: {
@@ -53,7 +72,7 @@ export default defineConfig(({ command, mode }) => {
       cors: true,
       proxy: {
         '/api': {
-          target: env.VITE_API_BASE_URL ?? 'http://localhost:7070',
+          target: API_BASE_URL,
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path,
@@ -113,11 +132,7 @@ export default defineConfig(({ command, mode }) => {
     },
 
     define: {
-      __API_BASE_URL__: JSON.stringify(
-        isProd
-          ? (env.VITE_PROD_API_BASE_URL ?? 'https://react-diploma-backend.onrender.com')
-          : (env.VITE_API_BASE_URL ?? 'http://localhost:7070'),
-      ),
+      __API_BASE_URL__: JSON.stringify(API_BASE_URL),
       __DEV__: JSON.stringify(isDev),
       __PROD__: JSON.stringify(isProd),
       __APP_VERSION__: JSON.stringify(env.VITE_APP_VERSION ?? '1.0.0'),
@@ -125,10 +140,6 @@ export default defineConfig(({ command, mode }) => {
     },
 
     envPrefix: ['VITE_'],
-
-    base: isProd
-      ? (env.VITE_PROD_BASE_URL ?? '/React-diploma/')
-      : (env.VITE_BASE_URL ?? '/'),
 
     optimizeDeps: {
       include: [

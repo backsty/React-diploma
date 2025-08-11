@@ -1,121 +1,155 @@
-import http from 'node:http'
-import fs from 'node:fs'
-import path from 'node:path'
-import url from 'node:url'
-const { randomInt } = await import('node:crypto')
-import { setTimeout } from 'node:timers/promises'
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import url from 'node:url';
+const { randomInt } = await import('node:crypto');
+import { setTimeout } from 'node:timers/promises';
 
-const __filename = url.fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const categoriesPath = path.join(__dirname, 'data', 'categories.json')
-const productsPath = path.join(__dirname, 'data', 'products.json')
+const categoriesPath = path.join(__dirname, 'data', 'categories.json');
+const productsPath = path.join(__dirname, 'data', 'products.json');
 
-const categories = JSON.parse(fs.readFileSync(categoriesPath, 'utf-8'))
-const items = JSON.parse(fs.readFileSync(productsPath, 'utf-8'))
+const categories = JSON.parse(fs.readFileSync(categoriesPath, 'utf-8'));
+const items = JSON.parse(fs.readFileSync(productsPath, 'utf-8'));
 
-const topSaleIds = [66, 65, 73]
-const moreCount = 6
+const topSaleIds = [66, 65, 73];
+const moreCount = 6;
 
 const itemBasicMapper = item => ({
   id: item.id,
   category: item.category,
   title: item.title,
   price: item.price,
-  images: item.images
-})
+  images: item.images,
+});
 
 const config = {
-  delay: false,
-  error: process.env.APP_ERROR === 'true'
-}
+  delay: process.env.APP_DELAY === 'true',
+  error: process.env.APP_ERROR === 'true',
+};
 
 const parseRequestBody = req => {
   return new Promise(resolve => {
-    let body = []
+    let body = [];
     req
       .on('data', chunk => {
-        body.push(chunk)
+        body.push(chunk);
       })
       .on('end', () => {
-        body = Buffer.concat(body).toString()
-        resolve(JSON.parse(body))
-      })
-  })
-}
+        body = Buffer.concat(body).toString();
+        resolve(JSON.parse(body));
+      });
+  });
+};
 
 const setCorsHeaders = res => {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-}
+  const allowedOrigins =
+    process.env.NODE_ENV === 'production'
+      ? [
+          'https://backsty.github.io',
+          'https://react-diploma-backend.onrender.com',
+        ]
+      : ['http://localhost:3000', 'http://127.0.0.1:3000'];
+
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Для простоты, в продакшене лучше конкретные домены
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'false');
+};
 
 const handleOptionsRequest = (req, res) => {
-  setCorsHeaders(res)
-  res.writeHead(200)
-  res.end()
-}
+  setCorsHeaders(res);
+  res.writeHead(200);
+  res.end();
+};
 
 const sendResponse = (res, statusCode, data = null) => {
-  setCorsHeaders(res)
-  res.writeHead(statusCode, { 'Content-Type': 'application/json' })
+  setCorsHeaders(res);
+  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
   if (statusCode === 204) {
-    res.end()
+    res.end();
   } else {
-    res.end(JSON.stringify(data))
+    res.end(JSON.stringify(data));
   }
-}
+};
 
 const createServer = (port = 7070) => {
   const server = http.createServer(async (req, res) => {
+    // Добавляем задержку если нужно
+    if (config.delay) {
+      await setTimeout(randomInt(1000, 3000));
+    }
+
     if (req.method === 'OPTIONS') {
-      return handleOptionsRequest(req, res)
+      return handleOptionsRequest(req, res);
     }
 
     if (config.error && Math.random() > 0.8) {
-      sendResponse(res, 500, 'Internal server error')
+      return sendResponse(res, 500, { error: 'Internal server error' });
     }
 
-    const parsedUrl = url.parse(req.url, true)
-    const pathname = parsedUrl.pathname
-    const query = parsedUrl.query
+    const parsedUrl = url.parse(req.url, true);
+    const pathname = parsedUrl.pathname;
+    const query = parsedUrl.query;
 
     try {
+      // Health check
+      if (pathname === '/health' && req.method === 'GET') {
+        return sendResponse(res, 200, {
+          status: 'ok',
+          timestamp: new Date().toISOString(),
+          env: process.env.NODE_ENV || 'development',
+        });
+      }
+
       // Маршруты
       if (pathname === '/' && req.method === 'GET') {
-        return sendResponse(res, 200, { message: 'API server is running' })
+        return sendResponse(res, 200, {
+          message: 'React Diploma API server is running',
+          version: '1.0.0',
+          endpoints: [
+            '/api/top-sales',
+            '/api/categories',
+            '/api/items',
+            '/api/items/:id',
+            '/api/order',
+          ],
+        });
       }
 
       if (pathname === '/api/top-sales' && req.method === 'GET') {
         const topSales = items
           .filter(o => topSaleIds.includes(o.id))
-          .map(itemBasicMapper)
-        return sendResponse(res, 200, topSales)
+          .map(itemBasicMapper);
+        return sendResponse(res, 200, topSales);
       }
 
       if (pathname === '/api/categories' && req.method === 'GET') {
-        return sendResponse(res, 200, categories)
+        return sendResponse(res, 200, categories);
       }
 
       if (pathname === '/api/items' && req.method === 'GET') {
-        const categoryId = Number(query.categoryId || 0)
-        const offset = Number(query.offset || 0)
-        const q = (query.q || '').trim().toLowerCase()
+        const categoryId = Number(query.categoryId || 0);
+        const offset = Number(query.offset || 0);
+        const q = (query.q || '').trim().toLowerCase();
 
-        console.log('API /items запрос:', { categoryId, offset, q, query })
+        console.log('API /items запрос:', { categoryId, offset, q, query });
 
         let filtered = [...items];
 
-        // 1. Фильтр по категории (только если categoryId > 0)
+        // Фильтр по категории
         if (categoryId > 0) {
           filtered = filtered.filter(item => item.category === categoryId);
-          console.log(`Фильтр по категории ${categoryId}:`, filtered.length, 'товаров');
-        } else {
-          console.log('Показываем все категории:', filtered.length, 'товаров');
+          console.log(
+            `Фильтр по категории ${categoryId}:`,
+            filtered.length,
+            'товаров',
+          );
         }
 
-        // 2. Фильтр по поисковому запросу
-        // ТЗ: "по точному совпадению цвета без учёта регистра" и "по содержанию слова для названия"
+        // Фильтр по поисковому запросу
         if (q) {
           filtered = filtered.filter(item => {
             const title = (item.title || '').toLowerCase();
@@ -123,45 +157,46 @@ const createServer = (port = 7070) => {
             const manufacturer = (item.manufacturer || '').toLowerCase();
             const material = (item.material || '').toLowerCase();
 
-            // Точное совпадение цвета
             const colorMatch = color === q;
-
-            // Содержание в названии, производителе, материале
             const titleMatch = title.includes(q);
             const manufacturerMatch = manufacturer.includes(q);
             const materialMatch = material.includes(q);
 
-            return colorMatch || titleMatch || manufacturerMatch || materialMatch;
+            return (
+              colorMatch || titleMatch || manufacturerMatch || materialMatch
+            );
           });
           console.log(`Фильтр по поиску "${q}":`, filtered.length, 'товаров');
         }
 
-        // 3. Пагинация
+        // Пагинация
         const paginatedItems = filtered
           .slice(offset, offset + moreCount)
           .map(itemBasicMapper);
 
-        console.log(`Отправляем ${paginatedItems.length} товаров (offset: ${offset}, total: ${filtered.length})`);
+        console.log(
+          `Отправляем ${paginatedItems.length} товаров (offset: ${offset}, total: ${filtered.length})`,
+        );
 
-        return sendResponse(res, 200, paginatedItems)
+        return sendResponse(res, 200, paginatedItems);
       }
 
       if (pathname.match(/^\/api\/items\/\d+$/) && req.method === 'GET') {
-        const id = Number(pathname.split('/')[3])
-        const item = items.find(o => o.id === id)
+        const id = Number(pathname.split('/')[3]);
+        const item = items.find(o => o.id === id);
         return item
           ? sendResponse(res, 200, item)
-          : sendResponse(res, 404, 'Not found')
+          : sendResponse(res, 404, { error: 'Item not found' });
       }
 
       if (pathname === '/api/order' && req.method === 'POST') {
-        const body = await parseRequestBody(req)
+        const body = await parseRequestBody(req);
 
-        const { owner = {}, items: orderItems = [] } = body
-        const { phone, address } = owner
+        const { owner = {}, items: orderItems = [] } = body;
+        const { phone, address } = owner;
 
         if (typeof phone !== 'string' || typeof address !== 'string') {
-          return sendResponse(res, 400, 'Invalid owner data')
+          return sendResponse(res, 400, { error: 'Invalid owner data' });
         }
 
         if (
@@ -170,27 +205,36 @@ const createServer = (port = 7070) => {
             item =>
               typeof item.id === 'number' &&
               typeof item.price === 'number' &&
-              typeof item.count === 'number'
+              typeof item.count === 'number',
           )
         ) {
-          return sendResponse(res, 400, 'Invalid items format')
+          return sendResponse(res, 400, { error: 'Invalid items format' });
         }
 
-        return sendResponse(res, 204)
+        console.log('📦 Заказ создан:', {
+          phone,
+          address,
+          itemsCount: orderItems.length,
+        });
+        return sendResponse(res, 204);
       }
 
-      sendResponse(res, 404, 'Not found')
+      sendResponse(res, 404, { error: 'Endpoint not found' });
     } catch (error) {
-      console.error('Server error:', error)
-      sendResponse(res, 500, 'Internal server error')
+      console.error('Server error:', error);
+      sendResponse(res, 500, { error: 'Internal server error' });
     }
-  })
+  });
 
   server.listen(port, () => {
-    console.log(`Server running on port ${port}`)
-  })
+    console.log(`🚀 Server running on port ${port}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(
+      `🔧 CORS origin: ${process.env.CORS_ORIGIN || 'localhost:3000'}`,
+    );
+  });
 
-  return server
-}
+  return server;
+};
 
-export { createServer }
+export { createServer };

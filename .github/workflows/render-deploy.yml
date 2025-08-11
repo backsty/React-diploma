@@ -52,15 +52,9 @@ jobs:
           api-key: ${{ secrets.RENDER_API_KEY }}
 
       - name: ⏳ Wait for Deployment
-        run: sleep 30
+        run: sleep 60
 
       - name: 🏃 Health Check
         run: |
-          curl -f https://ra16-diploma-1.onrender.com/api/categories || exit 1
+          curl -f https://react-diploma-backend.onrender.com/health || exit 1
           echo "🎉 Backend deployed and healthy!"
-
-      - name: 📝 Update Frontend Environment
-        run: |
-          echo "🔄 Backend deployed successfully!"
-          echo "🌐 API URL: https://ra16-diploma-1.onrender.com"
-          echo "📋 Remember to redeploy frontend if API changed"

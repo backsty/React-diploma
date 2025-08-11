@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useAtom } from '@reatom/npm-react';
 import { MainContent } from '@/shared/ui';
 import { Banner } from '@/widgets/banner';
@@ -62,7 +61,7 @@ export const CartPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {cart.items.map((item, index) => (
+                {cart.items.map((item) => (
                   <tr key={`${item.id}-${item.size}`}>
                     <td>
                       <img 

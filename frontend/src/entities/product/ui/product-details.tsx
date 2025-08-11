@@ -46,6 +46,7 @@ export const ProductDetails = ({
       const timer = setTimeout(() => setSuccess(false), 3000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [success]);
 
   const handleSizeSelect = (size: string) => {

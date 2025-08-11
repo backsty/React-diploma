@@ -1,3 +1,3 @@
-import { createServer } from './server.mjs'
+import { createServer } from './server.mjs';
 
-createServer(process.env.PORT)
+createServer(process.env.PORT);
