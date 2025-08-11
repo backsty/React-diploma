@@ -1,3 +1,19 @@
+# React Diploma — Shoe Store
+
+[![Deploy Frontend to GitHub Pages](https://github.com/backsty/React-diploma/actions/workflows/deploy.yml/badge.svg)](https://github.com/backsty/React-diploma/actions/workflows/deploy.yml)
+[![Deploy Backend to Render](https://github.com/backsty/React-diploma/actions/workflows/render-deploy.yml/badge.svg)](https://github.com/backsty/React-diploma/actions/workflows/render-deploy.yml)
+[![Continuous Integration](https://github.com/backsty/React-diploma/actions/workflows/ci.yml/badge.svg)](https://github.com/backsty/React-diploma/actions/workflows/ci.yml)
+
+---
+
+**Live demo:**  
+🌐 [https://backsty.github.io/React-diploma/](https://backsty.github.io/React-diploma/)
+
+**Backend API:**  
+🔗 [https://react-diploma-backend-x0qm.onrender.com/api/items](https://react-diploma-backend-x0qm.onrender.com/api/items)
+
+---
+
 # Дипломный проект курса «React»
 
 Дипломный проект представляет собой интернет-магазин обуви. Задача заключается в создании работающего приложения, всеми основными функциями которого можно пользоваться.
