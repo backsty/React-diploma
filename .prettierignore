@@ -1,0 +1,110 @@
+# Dependencies
+node_modules/
+*/node_modules/
+.pnp
+.pnp.js
+
+# Production builds
+build/
+dist/
+out/
+coverage/
+.vite/
+.next/
+.nuxt/
+.svelte-kit/
+storybook-static/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+.envrc
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# IDE files
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Cache directories
+.cache/
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+*.tmp
+*.temp
+
+# TypeScript
+*.tsbuildinfo
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+**/bun.lockb
+bun.lock
+**/bun.lock
+
+# Deployment
+.vercel/
+.netlify/
+.firebase/
+
+# Project specific
+frontend/src/htmlTemplates/
+backend/src/data/
+
+# Generated files
+CHANGELOG.md
+*.min.js
+*.min.css
+
+# Documentation assets
+docs/screenshots/
+docs/assets/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+uploads/
+backend/uploads/

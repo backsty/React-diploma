@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://backsty.github.io/React-diploma/sitemap.xml

@@ -26,7 +26,7 @@ const itemBasicMapper = item => ({
 })
 
 const config = {
-  delay: process.env.APP_DELAY === 'true',
+  delay: false,
   error: process.env.APP_ERROR === 'true'
 }
 
@@ -59,17 +59,17 @@ const handleOptionsRequest = (req, res) => {
 const sendResponse = (res, statusCode, data = null) => {
   setCorsHeaders(res)
   res.writeHead(statusCode, { 'Content-Type': 'application/json' })
-  res.end(JSON.stringify(data))
+  if (statusCode === 204) {
+    res.end()
+  } else {
+    res.end(JSON.stringify(data))
+  }
 }
 
 const createServer = (port = 7070) => {
   const server = http.createServer(async (req, res) => {
     if (req.method === 'OPTIONS') {
       return handleOptionsRequest(req, res)
-    }
-
-    if (config.delay) {
-      await setTimeout(randomInt(100, 60_000))
     }
 
     if (config.error && Math.random() > 0.8) {
@@ -82,6 +82,10 @@ const createServer = (port = 7070) => {
 
     try {
       // Маршруты
+      if (pathname === '/' && req.method === 'GET') {
+        return sendResponse(res, 200, { message: 'API server is running' })
+      }
+
       if (pathname === '/api/top-sales' && req.method === 'GET') {
         const topSales = items
           .filter(o => topSaleIds.includes(o.id))
@@ -98,16 +102,48 @@ const createServer = (port = 7070) => {
         const offset = Number(query.offset || 0)
         const q = (query.q || '').trim().toLowerCase()
 
-        const filtered = items
-          .filter(o => categoryId === 0 || o.category === categoryId)
-          .filter(
-            o =>
-              o.title.toLowerCase().includes(q) || o.color.toLowerCase() === q
-          )
-          .slice(offset, offset + moreCount)
-          .map(itemBasicMapper)
+        console.log('API /items запрос:', { categoryId, offset, q, query })
 
-        return sendResponse(res, 200, filtered)
+        let filtered = [...items];
+
+        // 1. Фильтр по категории (только если categoryId > 0)
+        if (categoryId > 0) {
+          filtered = filtered.filter(item => item.category === categoryId);
+          console.log(`Фильтр по категории ${categoryId}:`, filtered.length, 'товаров');
+        } else {
+          console.log('Показываем все категории:', filtered.length, 'товаров');
+        }
+
+        // 2. Фильтр по поисковому запросу
+        // ТЗ: "по точному совпадению цвета без учёта регистра" и "по содержанию слова для названия"
+        if (q) {
+          filtered = filtered.filter(item => {
+            const title = (item.title || '').toLowerCase();
+            const color = (item.color || '').toLowerCase();
+            const manufacturer = (item.manufacturer || '').toLowerCase();
+            const material = (item.material || '').toLowerCase();
+
+            // Точное совпадение цвета
+            const colorMatch = color === q;
+
+            // Содержание в названии, производителе, материале
+            const titleMatch = title.includes(q);
+            const manufacturerMatch = manufacturer.includes(q);
+            const materialMatch = material.includes(q);
+
+            return colorMatch || titleMatch || manufacturerMatch || materialMatch;
+          });
+          console.log(`Фильтр по поиску "${q}":`, filtered.length, 'товаров');
+        }
+
+        // 3. Пагинация
+        const paginatedItems = filtered
+          .slice(offset, offset + moreCount)
+          .map(itemBasicMapper);
+
+        console.log(`Отправляем ${paginatedItems.length} товаров (offset: ${offset}, total: ${filtered.length})`);
+
+        return sendResponse(res, 200, paginatedItems)
       }
 
       if (pathname.match(/^\/api\/items\/\d+$/) && req.method === 'GET') {
@@ -145,6 +181,7 @@ const createServer = (port = 7070) => {
 
       sendResponse(res, 404, 'Not found')
     } catch (error) {
+      console.error('Server error:', error)
       sendResponse(res, 500, 'Internal server error')
     }
   })

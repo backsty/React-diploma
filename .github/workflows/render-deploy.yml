@@ -1,4 +1,4 @@
-name: Deploy Backend
+name: 🌐 Deploy Backend to Render
 
 on:
   push:
@@ -7,28 +7,60 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  test:
+    name: 🧪 Test Backend
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout
+      - name: 📂 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Bun
+      - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: latest
+          bun-version: "latest"
 
-      - name: Install Dependencies
+      - name: 📦 Install Dependencies
         working-directory: backend
-        run: bun install
+        run: bun install --frozen-lockfile
 
-      - name: Lint
+      - name: 📏 Lint Check
         working-directory: backend
-        run: bun run lint
+        run: bun run lint:check
 
-      - name: Deploy to Render
+      - name: 🧪 Run Tests
+        working-directory: backend
+        run: bun run test
+
+      - name: 🔨 Build Check
+        working-directory: backend
+        run: bun run build
+
+  deploy:
+    name: 🚀 Deploy to Render
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: 📂 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🚀 Trigger Render Deploy
         uses: johnbeynon/render-deploy-action@v0.0.8
         with:
           service-id: ${{ secrets.RENDER_SERVICE_ID }}
           api-key: ${{ secrets.RENDER_API_KEY }}
+
+      - name: ⏳ Wait for Deployment
+        run: sleep 30
+
+      - name: 🏃 Health Check
+        run: |
+          curl -f https://ra16-diploma-1.onrender.com/api/categories || exit 1
+          echo "🎉 Backend deployed and healthy!"
+
+      - name: 📝 Update Frontend Environment
+        run: |
+          echo "🔄 Backend deployed successfully!"
+          echo "🌐 API URL: https://ra16-diploma-1.onrender.com"
+          echo "📋 Remember to redeploy frontend if API changed"

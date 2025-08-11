@@ -69,7 +69,6 @@
     "clean:all": "bun run clean && rimraf node_modules frontend/node_modules backend/node_modules",
     "reset": "bun run clean:all && bun run install:all",
     "analyze": "bun --cwd frontend run analyze",
-    "prepare": "husky install",
     "ci": "bun run install:all && bun run lint && bun run type-check && bun run test && bun run build",
     "deploy:frontend": "gh-pages -d frontend/dist",
     "deploy:backend": "echo 'Backend deployed to Render.com automatically'",
@@ -120,7 +119,7 @@
     "production_backend_url": "https://react-diploma-backend.onrender.com"
   },
   "volta": {
-    "node": "20.18.1",
+    "node": "23.11.0",
     "bun": "1.2.18"
   }
 }

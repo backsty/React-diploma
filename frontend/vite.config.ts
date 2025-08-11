@@ -1,53 +1,79 @@
-import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { defineConfig, loadEnv } from 'vite';
+import svgr from 'vite-plugin-svgr';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(({ command, mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, __dirname, '');
   const isDev = command === 'serve';
   const isProd = command === 'build';
 
   return {
     plugins: [
       react({
-        jsxRuntime: 'automatic'
-      })
+        jsxRuntime: 'automatic',
+      }),
+      svgr({
+        svgrOptions: {
+          exportType: 'default',
+          ref: true,
+          svgo: false,
+          titleProp: true,
+        },
+        include: '**/*.svg',
+      }),
     ],
+
+    publicDir: 'public',
 
     resolve: {
       alias: {
         '@': resolve(__dirname, './src'),
-        '@/components': resolve(__dirname, './src/components'),
+        '@/app': resolve(__dirname, './src/app'),
         '@/pages': resolve(__dirname, './src/pages'),
-        '@/store': resolve(__dirname, './src/store'),
-        '@/types': resolve(__dirname, './src/types'),
-        '@/services': resolve(__dirname, './src/services'),
-        '@/hooks': resolve(__dirname, './src/hooks'),
-        '@/utils': resolve(__dirname, './src/utils'),
+        '@/widgets': resolve(__dirname, './src/widgets'),
+        '@/features': resolve(__dirname, './src/features'),
+        '@/entities': resolve(__dirname, './src/entities'),
+        '@/shared': resolve(__dirname, './src/shared'),
+        '@/shared/ui': resolve(__dirname, './src/shared/ui'),
+        '@/shared/lib': resolve(__dirname, './src/shared/lib'),
+        '@/shared/config': resolve(__dirname, './src/shared/config'),
+        '@/shared/store': resolve(__dirname, './src/shared/store'),
         '@/assets': resolve(__dirname, './src/assets'),
-        '@/router': resolve(__dirname, './src/router'),
-        '@/htmlTemplates': resolve(__dirname, './src/htmlTemplates')
-      }
+      },
     },
 
     server: {
       port: 3000,
       host: '0.0.0.0',
       open: true,
+      cors: true,
       proxy: {
         '/api': {
-          target: env.VITE_API_BASE_URL || 'http://localhost:7070',
+          target: env.VITE_API_BASE_URL ?? 'http://localhost:7070',
           changeOrigin: true,
-          secure: false
-        }
-      }
+          secure: false,
+          rewrite: (path) => path,
+        },
+      },
+    },
+
+    preview: {
+      port: 4173,
+      host: '0.0.0.0',
+      open: true,
     },
 
     build: {
       outDir: 'dist',
-      sourcemap: false,
-      minify: 'esbuild',
+      sourcemap: isDev,
+      minify: isProd ? 'esbuild' : false,
       target: 'esnext',
+      cssCodeSplit: true,
+      assetsInlineLimit: 4096,
       rollupOptions: {
         output: {
           manualChunks: {
@@ -62,47 +88,47 @@ export default defineConfig(({ command, mode }) => {
               '@reatom/logger',
               '@reatom/primitives',
               '@reatom/url',
-              '@reatom/undo'
+              '@reatom/undo',
             ],
-            'ui-libs': [
-              'framer-motion',
-              '@heroicons/react',
-              'react-hot-toast',
-              'react-image',
-              'react-intersection-observer'
-            ],
-            'forms': [
-              'react-hook-form',
-              '@hookform/resolvers',
-              'zod'
-            ],
-            'utils': [
-              'clsx',
-              '@tanstack/react-virtual',
-              'crypto-js'
-            ]
-          }
-        }
-      }
+            'validation': ['zod'],
+            'utils': ['clsx'],
+          },
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: (assetInfo) => {
+            const name = assetInfo.name ?? '';
+            if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(name)) {
+              return 'assets/img/[name]-[hash][extname]';
+            }
+            if (/\.(css)$/i.test(name)) {
+              return 'assets/css/[name]-[hash][extname]';
+            }
+            if (/\.(woff2?|eot|ttf|otf)$/i.test(name)) {
+              return 'assets/fonts/[name]-[hash][extname]';
+            }
+            return 'assets/[ext]/[name]-[hash][extname]';
+          },
+        },
+      },
     },
 
     define: {
       __API_BASE_URL__: JSON.stringify(
-        isProd 
-          ? env.VITE_PROD_API_BASE_URL || 'https://react-diploma-backend.onrender.com'
-          : env.VITE_API_BASE_URL || 'http://localhost:7070'
+        isProd
+          ? (env.VITE_PROD_API_BASE_URL ?? 'https://react-diploma-backend.onrender.com')
+          : (env.VITE_API_BASE_URL ?? 'http://localhost:7070'),
       ),
       __DEV__: JSON.stringify(isDev),
       __PROD__: JSON.stringify(isProd),
-      __APP_VERSION__: JSON.stringify(env.VITE_APP_VERSION || '1.0.0'),
-      __BUILD_TIME__: JSON.stringify(new Date().toISOString())
+      __APP_VERSION__: JSON.stringify(env.VITE_APP_VERSION ?? '1.0.0'),
+      __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
     },
 
     envPrefix: ['VITE_'],
 
-    base: isProd 
-      ? env.VITE_PROD_BASE_URL || '/React-diploma/'
-      : env.VITE_BASE_URL || '/',
+    base: isProd
+      ? (env.VITE_PROD_BASE_URL ?? '/React-diploma/')
+      : (env.VITE_BASE_URL ?? '/'),
 
     optimizeDeps: {
       include: [
@@ -111,9 +137,23 @@ export default defineConfig(({ command, mode }) => {
         'react-router-dom',
         '@reatom/core',
         '@reatom/npm-react',
-        'clsx',
-        'framer-motion'
-      ]
-    }
+        '@reatom/persist-web-storage',
+        'zod',
+      ],
+      exclude: [],
+    },
+
+    css: {
+      devSourcemap: true,
+      modules: {
+        localsConvention: 'camelCase',
+        generateScopedName: isDev
+          ? '[name]__[local]___[hash:base64:5]'
+          : '[hash:base64:8]',
+      },
+    },
+
+    logLevel: isDev ? 'info' : 'warn',
+    clearScreen: false,
   };
 });

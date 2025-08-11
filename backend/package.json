@@ -14,12 +14,15 @@
     "flaky": "cross-env APP_DELAY=true APP_ERROR=true bun run src/index.mjs",
     "test": "bun test",
     "test:watch": "bun test --watch",
-    "lint": "prettier --write src",
-    "lint:check": "prettier --check src",
+    "lint": "prettier --write src/",
+    "lint:check": "prettier --check src/",
+    "format": "prettier --write src/",
+    "format:check": "prettier --check src/",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf dist coverage",
-    "build": "bun build src/index.mjs --outdir dist --target node",
-    "preview": "bun run dist/index.js"
+    "clean": "rimraf dist coverage",
+    "build": "bun build src/index.mjs --outdir dist --target node --minify",
+    "preview": "bun run dist/index.js",
+    "health": "curl -f http://localhost:7070/api/categories || echo 'Backend not responding'"
   },
   "keywords": [
     "react",
@@ -49,6 +52,7 @@
   "devDependencies": {
     "cross-env": "^7.0.3",
     "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
     "@types/express": "^5.0.3",
     "@types/cors": "^2.8.19",
     "@types/multer": "^2.0.0",
@@ -58,7 +62,5 @@
     "express",
     "cors"
   ],
-  "optionalDependencies": {},
-  "overrides": {},
   "packageManager": "bun@1.2.18"
 }

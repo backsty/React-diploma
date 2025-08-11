@@ -24,34 +24,102 @@
     "noPropertyAccessFromIndexSignature": false,
     "allowImportingTsExtensions": false,
     "verbatimModuleSyntax": false,
-    "types": ["vite/client", "node"],
+    
+    // Дополнительные строгие проверки
+    "noUncheckedIndexedAccess": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    
+    // Типы для среды разработки
+    "types": [
+      "vite/client", 
+      "node"
+    ],
+    
+    // Пути для FSD структуры
     "baseUrl": ".",
     "paths": {
+      // Основные слои FSD
       "@/*": ["src/*"],
-      "@/components/*": ["src/components/*"],
+      
+      // App layer
+      "@/app": ["src/app"],
+      "@/app/*": ["src/app/*"],
+      
+      // Pages layer
+      "@/pages": ["src/pages"],
       "@/pages/*": ["src/pages/*"],
-      "@/store/*": ["src/store/*"],
-      "@/types/*": ["src/types/*"],
-      "@/services/*": ["src/services/*"],
-      "@/hooks/*": ["src/hooks/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/assets/*": ["src/assets/*"],
-      "@/router/*": ["src/router/*"],
-      "@/htmlTemplates/*": ["src/htmlTemplates/*"]
+      
+      // Widgets layer
+      "@/widgets": ["src/widgets"],
+      "@/widgets/*": ["src/widgets/*"],
+      
+      // Features layer
+      "@/features": ["src/features"],
+      "@/features/*": ["src/features/*"],
+      
+      // Entities layer
+      "@/entities": ["src/entities"],
+      "@/entities/*": ["src/entities/*"],
+      
+      // Shared layer
+      "@/shared": ["src/shared"],
+      "@/shared/*": ["src/shared/*"],
+      
+      // Shared подслои
+      "@/shared/ui": ["src/shared/ui"],
+      "@/shared/ui/*": ["src/shared/ui/*"],
+      "@/shared/lib": ["src/shared/lib"],
+      "@/shared/lib/*": ["src/shared/lib/*"],
+      "@/shared/config": ["src/shared/config"],
+      "@/shared/config/*": ["src/shared/config/*"],
+      "@/shared/store": ["src/shared/store"],
+      "@/shared/store/*": ["src/shared/store/*"],
+      
+      // Assets
+      "@/assets": ["src/assets"],
+      "@/assets/*": ["src/assets/*"]
     }
   },
+  
+  // Файлы для компиляции
   "include": [
     "src/**/*",
     "src/**/*.tsx",
     "src/**/*.ts",
     "vite.config.ts",
-    "vitest.config.ts"
+    "src/vite-env.d.ts"
   ],
+  
+  // Исключения из компиляции
   "exclude": [
     "node_modules",
     "build",
     "dist",
     "coverage",
-    "public"
-  ]
+    "public",
+    "src/htmlTemplates--unused",
+    "tmp",
+    "temp",
+    "*.log",
+    ".vite",
+    ".cache"
+  ],
+  
+  "references": [],
+  
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority",
+    "synchronousWatchDirectory": true,
+    "excludeDirectories": [
+      "**/node_modules",
+      "**/dist",
+      "**/build",
+      "**/.vite"
+    ]
+  },
+  
+  "compileOnSave": false
 }
