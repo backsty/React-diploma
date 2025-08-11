@@ -1,0 +1,8 @@
+{
+  "short_name": "BosaNoga",
+  "name": "Bosa Noga — Магазин обуви",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff"
+}
