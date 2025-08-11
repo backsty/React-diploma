@@ -46,8 +46,8 @@ jobs:
         run: bun run build
         env:
           NODE_ENV: production
-          VITE_API_BASE_URL: https://react-diploma-backend.onrender.com
-          VITE_PROD_API_BASE_URL: https://react-diploma-backend.onrender.com
+          VITE_API_BASE_URL: https://react-diploma-backend-x0qm.onrender.com/
+          VITE_PROD_API_BASE_URL: https://react-diploma-backend-x0qm.onrender.com/
 
       - name: 📤 Upload Build Artifact
         uses: actions/upload-pages-artifact@v3

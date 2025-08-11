@@ -115,8 +115,8 @@
   "config": {
     "frontend_url": "http://localhost:3000",
     "backend_url": "http://localhost:7070",
-    "production_frontend_url": "https://backsty.github.io/React-diploma/",
-    "production_backend_url": "https://react-diploma-backend.onrender.com"
+    "production_frontend_url": "https://react-diploma-backend-x0qm.onrender.com/",
+    "production_backend_url": "https://react-diploma-backend-x0qm.onrender.com/"
   },
   "volta": {
     "node": "23.11.0",

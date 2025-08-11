@@ -2,7 +2,7 @@
 const getApiBaseUrl = (): string => {
   // В production используем переменную окружения для продакшена
   if (import.meta.env.PROD) {
-    return import.meta.env.VITE_PROD_API_BASE_URL || 'https://react-diploma-backend.onrender.com';
+    return import.meta.env.VITE_PROD_API_BASE_URL || 'https://react-diploma-backend-x0qm.onrender.com/';
   }
   
   // В development используем локальный сервер

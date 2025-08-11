@@ -45,7 +45,7 @@ bun run build
 ## 🌐 Деплой
 
 - **Разработка**: http://localhost:7070
-- **Продакшен**: https://react-diploma-backend.onrender.com
+- **Продакшен**: https://react-diploma-backend-x0qm.onrender.com/
 
 ## 📝 Тестирование API
 

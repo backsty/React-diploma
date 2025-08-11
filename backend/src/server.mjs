@@ -49,7 +49,7 @@ const setCorsHeaders = res => {
     process.env.NODE_ENV === 'production'
       ? [
           'https://backsty.github.io',
-          'https://react-diploma-backend.onrender.com',
+          'https://react-diploma-backend-x0qm.onrender.com/',
         ]
       : ['http://localhost:3000', 'http://127.0.0.1:3000'];
 

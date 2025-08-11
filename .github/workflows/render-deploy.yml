@@ -56,5 +56,5 @@ jobs:
 
       - name: 🏃 Health Check
         run: |
-          curl -f https://react-diploma-backend.onrender.com/health || exit 1
+          curl -f https://react-diploma-backend-x0qm.onrender.com/health || exit 1
           echo "🎉 Backend deployed and healthy!"

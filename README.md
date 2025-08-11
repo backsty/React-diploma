@@ -16,7 +16,7 @@
 
 Бэкенд видоизменять нельзя.  
 При необходимости опубликовать сервер в интернете, используйте [render.com](https://render.com/docs/your-first-deploy) или аналоги.  
-Опубликованный сервер [react-diploma-backend.onrender.com](https://react-diploma-backend.onrender.com/api/items), может работать с перебоями, т.к. используется бесплатный тариф `render.com`
+Опубликованный сервер [react-diploma-backend.onrender.com](https://react-diploma-backend-x0qm.onrender.com/api/items), может работать с перебоями, т.к. используется бесплатный тариф `render.com`
 
 Сервер запускается командой:
 

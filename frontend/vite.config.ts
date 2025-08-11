@@ -12,7 +12,7 @@ export default defineConfig(({ command, mode }) => {
   const isProd = command === 'build';
 
   const API_BASE_URL = isProd 
-    ? (env.VITE_PROD_API_BASE_URL || 'https://react-diploma-backend.onrender.com')
+    ? (env.VITE_PROD_API_BASE_URL || 'https://react-diploma-backend-x0qm.onrender.com/')
     : (env.VITE_API_BASE_URL || 'http://localhost:7070');
 
   const BASE_URL = isProd
